@@ -91,9 +91,11 @@ void insertValue(HashTable *hashTable,int key){
         int isCompartilhado = hashTable->bucks[slot].reference == slot ? 0 : 1;
 
         if(isCompartilhado == 1){
+            int temp = -1;
             if (hashTable->bucks[slot].reference == -1){
                 for(int i = 0; i < hashTable->size; i++){
                     if(hashTable->bucks[i].reference == slot){
+                        temp = slot;
                         hashTable->bucks[slot].reference = slot;
                         slot = i;
                         break;
@@ -106,6 +108,12 @@ void insertValue(HashTable *hashTable,int key){
 
             for(int i = 0; i < hashTable->bucks[slot].order; i++)
                 hashTable->bucks[slot].page[i] = 0;
+            
+            if(temp != -1){
+                hashTable->bucks[temp].tail = 0;
+                for(int i = 0; i < hashTable->bucks[temp].order; i++)
+                    insertValue(hashTable, hashTable->bucks[temp].page[i]);
+            }
             insertValue(hashTable, key);
             return;
         } else{
