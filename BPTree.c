@@ -16,17 +16,21 @@ typedef struct leaf{
 typedef struct{
     Leaf *head;
     Leaf *tail;
+    int size;
 }Leafs;
 
-typedef struct{
+typedef struct node{
     int size;
     int *refs;
-}Nodes;
+    Leafs **leafs;
+    struct node **nodes;
+}Node;
 
 Leafs *initLeafs(){
     Leafs *new = malloc(sizeof(Leafs));
     new->head = NULL;
     new->tail = NULL;
+    new->size = 0;
     return new;
 }
 
@@ -56,6 +60,7 @@ void insertLeafAt(Leaf *prev, Leaf *new, Leaf *next){
 }
 
 void insertLeaf(Leafs *list, Leaf *new){
+    list->size++;
     if (!list->head && !list->tail){
         list->head = new;
         list->tail = new;
@@ -73,6 +78,19 @@ void printLeafs(Leafs *list){
     printf("\n");
 }
 
+Node *initBPTree(){
+    Node *root = malloc(sizeof(Node));
+    root->leafs = (Leafs **)malloc(sizeof(Leafs) * (K - 1));
+    root->nodes = NULL;
+    for(int i = 0; i < K - 1; i++)
+        root->leafs[i] = initLeafs();
+    root->refs = malloc(sizeof(int) * (K - 1));
+    root->size = 0;
+
+    return root;
+}
+
 int main(){
+    Node *root = initBPTree();
     return 0;
 }
