@@ -18,6 +18,12 @@ typedef struct{
     Buck *bucks;
 }HashTable;
 
+void swap(int *a, int *b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
 int hash(int key, int size){
     return key%size;
 }
@@ -76,7 +82,7 @@ HashTable *rebuildTable(HashTable *hashTable){
 void printHash(HashTable *hashTable){
     for(int i = 0; i < hashTable->size; i++){
         printf("Slot %d: ", i);
-        for(int j = 0; j < hashTable->bucks[i].order; j++){
+        for(int j = 0; j < hashTable->bucks[i].tail; j++){
             printf("%d ", hashTable->bucks[i].page[j]);
         }
         printf("\n");
@@ -120,7 +126,6 @@ void insertValue(HashTable *hashTable,int key){
             hashTable = rebuildTable(hashTable);
             hashTable->bucks[slot].tail = 0;
             for(int i = 0; i < hashTable->bucks[slot].order; i++){
-                //printf("Rehash: %d - Tail %d\n", hashTable->bucks[slot].page[i], hashTable->bucks[slot].tail);
                 insertValue(hashTable, hashTable->bucks[slot].page[i]);
             }
 
@@ -133,6 +138,19 @@ void insertValue(HashTable *hashTable,int key){
     hashTable->bucks[slot].tail++;
 }
 
+int removeValue(HashTable *hashTable,int key){
+    int slot = hash(key, hashTable->size);
+
+    for(int i = 0; i < hashTable->bucks[slot].tail; i++){
+        if(hashTable->bucks[slot].page[i] == key){
+            swap(&hashTable->bucks[slot].page[i], &hashTable->bucks[slot].page[hashTable->bucks[slot].tail - 1]);
+            hashTable->bucks[slot].tail--;
+            return hashTable->bucks[slot].page[hashTable->bucks[slot].tail];
+        }
+    }
+    return -1;
+}
+
 int main(){
     HashTable *hashTable = init();
 
@@ -140,5 +158,10 @@ int main(){
         insertValue(hashTable, i);
         printHash(hashTable);
     }
+
+    removeValue(hashTable, 8);
+    removeValue(hashTable, 2);
+
+    printHash(hashTable);
     return 0;
 }
