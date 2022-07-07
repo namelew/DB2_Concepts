@@ -56,7 +56,7 @@ HashTable *rebuildTable(HashTable *hashTable){
         new[i].page = hashTable->bucks[i].page;
         new[i].tail = hashTable->bucks[i].tail;
         new[i].order = hashTable->bucks[i].order;
-        new[i].reference = i;
+        new[i].reference = -1;
     }
     int j = 0;
     for(int i = old; i < hashTable->size; i++){
@@ -87,18 +87,27 @@ void printHash(HashTable *hashTable){
 void insertValue(HashTable *hashTable,int key){
     int slot = hash(key, hashTable->size);
 
-    printf("%d\n",slot);
-
     if(hashTable->bucks[slot].tail >= pow(K,ORDER)){
         int isCompartilhado = hashTable->bucks[slot].reference == slot ? 0 : 1;
 
         if(isCompartilhado == 1){
+            if (hashTable->bucks[slot].reference == -1){
+                for(int i = 0; i < hashTable->size; i++){
+                    if(hashTable->bucks[i].reference == slot){
+                        hashTable->bucks[slot].reference = slot;
+                        slot = i;
+                        break;
+                    }                    
+                }
+            }
             hashTable->bucks[slot].tail = 0;
             hashTable->bucks[slot].reference = slot;
             hashTable->bucks[slot].page = malloc(sizeof(int) * pow(K,ORDER));
 
             for(int i = 0; i < hashTable->bucks[slot].order; i++)
                 hashTable->bucks[slot].page[i] = 0;
+            insertValue(hashTable, key);
+            return;
         } else{
             hashTable = rebuildTable(hashTable);
             hashTable->bucks[slot].tail = 0;
@@ -119,7 +128,7 @@ void insertValue(HashTable *hashTable,int key){
 int main(){
     HashTable *hashTable = init();
 
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < 10; i++){
         insertValue(hashTable, i);
         printHash(hashTable);
     }
