@@ -48,6 +48,15 @@ int isSorted(int *array){
     return 1;
 }
 
+int getMax(int *array){
+    int greater = array[0];
+
+    for(int i = 1; i < N; i++)
+        if (array[i] > greater)
+            greater = array[i];
+    
+    return greater;
+}
 // funções auxiliares
 int partition(int *array, int start, int end)
 {
@@ -183,13 +192,9 @@ void heapSort(int *array){
 // métodos derivados de contagem 0(n * k)
 
 void countingSort(int *array){
-    int greater = 0;
+    int greater = getMax(array);
     int *counting = calloc(greater+1, sizeof(int));
     int *aux = malloc(sizeof(int) * N);
-
-    for(int i = 0; i < N; i++)
-        if(array[i] > greater)
-            greater = array[i];
     
     for(int i = 0; i < N; i++)
         counting[array[i]]++;
@@ -206,8 +211,31 @@ void countingSort(int *array){
         array[i] = aux[i];
 }
 
-void radixSort(){
+void countingSortRadix(int *array, int pos){
+    int *aux = malloc(sizeof(int) * N);
+    int *counting = calloc(10, sizeof(int));
 
+    for(int i = 0; i < N; i++)
+        counting[(array[i]/pos)%10]++;
+    
+    for(int i = 1; i < 10; i++)
+        counting[i] += counting[i-1];
+    
+    for(int i = N - 1; i >= 0; i--){
+        counting[(array[i]/pos)%10]--;
+        aux[counting[(array[i]/pos)%10]] = array[i];
+    }
+
+    for(int i = 0; i < N; i++)
+        array[i] = aux[i];
+}
+
+void radixSort(int *array){
+    int greater = getMax(array);
+
+    for(int pos = 1; greater/pos > 0; pos*=10){
+        countingSortRadix(array, pos);
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -218,7 +246,7 @@ int main(int argc, char const *argv[])
     }
     int *array = generateSample(sampleType);
 
-    countingSort(array);
+    radixSort(array);
 
     printArray(array);
 
