@@ -117,8 +117,40 @@ void quickSort(int *array, int start, int end){
     }
 }
 
-void mergeSort(){
+void merge(int *array, int start, int mid, int end){
+    int *aux = malloc(sizeof(int) * N);
+    int left = start;
+    int right = mid + 1;
+    int k = 0;
 
+    while(left <= mid && right <= end){
+        if(array[left] <= array[right])
+            aux[k] = array[left++];
+        else
+            aux[k] = array[right++];
+        k++;
+    }
+
+    while(left <= mid)
+        aux[k++] = array[left++];
+
+    while(right <= end)
+        aux[k++] = array[right++];
+
+    for(k = start; k <= end; k++)
+        array[k] = aux[k - start];
+    
+    free(aux);
+}
+
+void mergeSort(int *array, int start, int end){
+    if(end > start){
+        int mid = (start + end)/2;
+
+        mergeSort(array, start, mid);
+        mergeSort(array, mid + 1, end);
+        merge(array, start, mid, end);
+    }
 }
 
 void heapSort(){
@@ -133,7 +165,7 @@ int main(int argc, char const *argv[])
     }
     int *array = generateSample(sampleType);
 
-    quickSort(array, 0, N - 1);
+    mergeSort(array, 0, N - 1);
 
     printArray(array);
 
