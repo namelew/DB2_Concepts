@@ -57,6 +57,7 @@ int getMax(int *array){
     
     return greater;
 }
+
 // funções auxiliares
 int partition(int *array, int start, int end)
 {
@@ -120,6 +121,25 @@ void heaptify(int *array, int position, int tam){
         heaptify(array, greater, tam);
     }
 
+}
+
+void countingSortRadix(int *array, int pos){
+    int *aux = malloc(sizeof(int) * N);
+    int *counting = calloc(10, sizeof(int));
+
+    for(int i = 0; i < N; i++)
+        counting[(array[i]/pos)%10]++;
+    
+    for(int i = 1; i < 10; i++)
+        counting[i] += counting[i-1];
+    
+    for(int i = N - 1; i >= 0; i--){
+        counting[(array[i]/pos)%10]--;
+        aux[counting[(array[i]/pos)%10]] = array[i];
+    }
+
+    for(int i = 0; i < N; i++)
+        array[i] = aux[i];
 }
 
 // métodos quadráticos 0(n^2)
@@ -208,25 +228,6 @@ void countingSort(int *array){
     }
     
     for(int i = 0; i < N;i++)
-        array[i] = aux[i];
-}
-
-void countingSortRadix(int *array, int pos){
-    int *aux = malloc(sizeof(int) * N);
-    int *counting = calloc(10, sizeof(int));
-
-    for(int i = 0; i < N; i++)
-        counting[(array[i]/pos)%10]++;
-    
-    for(int i = 1; i < 10; i++)
-        counting[i] += counting[i-1];
-    
-    for(int i = N - 1; i >= 0; i--){
-        counting[(array[i]/pos)%10]--;
-        aux[counting[(array[i]/pos)%10]] = array[i];
-    }
-
-    for(int i = 0; i < N; i++)
         array[i] = aux[i];
 }
 
