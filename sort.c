@@ -8,18 +8,18 @@ int *generateSample(int type){
     int *array = malloc(sizeof(int) * N);
     switch (type)
     {
-    case 0:
+    case 0:;
         for(int i = 0; i < N; i++)
             array[i] = i;
         return array;
-    case 1:
+    case 1:;
         int value = N - 1;
         for(int i = 0; i < N; i++){
             array[i] = value;
             value--;
         }
         return array;
-    case 2:
+    case 2:;
         srand(getpid());
         for(int i = 0; i < N; i++)
             array[i] = rand()%N;
@@ -182,8 +182,28 @@ void heapSort(int *array){
 
 // métodos derivados de contagem 0(n * k)
 
-void countingSort(){
+void countingSort(int *array){
+    int greater = 0;
+    int *counting = calloc(greater+1, sizeof(int));
+    int *aux = malloc(sizeof(int) * N);
 
+    for(int i = 0; i < N; i++)
+        if(array[i] > greater)
+            greater = array[i];
+    
+    for(int i = 0; i < N; i++)
+        counting[array[i]]++;
+    
+    for(int i = 1; i <= greater; i++)
+        counting[i] += counting[i - 1];
+
+    for(int i = N -1; i >= 0; i--){
+        counting[array[i]]--;
+        aux[counting[array[i]]] = array[i];
+    }
+    
+    for(int i = 0; i < N;i++)
+        array[i] = aux[i];
 }
 
 void radixSort(){
@@ -198,7 +218,7 @@ int main(int argc, char const *argv[])
     }
     int *array = generateSample(sampleType);
 
-    heapSort(array);
+    countingSort(array);
 
     printArray(array);
 
