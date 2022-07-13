@@ -48,6 +48,71 @@ int isSorted(int *array){
     return 1;
 }
 
+// funções auxiliares
+int partition(int *array, int start, int end)
+{
+    int pivo = array[end];
+    int k = start;
+ 
+    for (int j = start; j <= end - 1; j++)
+        if (array[j] < pivo)    
+            swap(&array[k++], &array[j]);
+    
+    swap(&array[k], &array[end]);
+    return k;
+}
+
+int partition_rp(int *array, int start, int end){
+    int rp = start + rand() % (end - start);
+
+    swap(&array[rp], &array[end]);
+
+    return partition(array, start, end);
+}
+
+void merge(int *array, int start, int mid, int end){
+    int *aux = malloc(sizeof(int) * N);
+    int left = start;
+    int right = mid + 1;
+    int k = 0;
+
+    while(left <= mid && right <= end){
+        if(array[left] <= array[right])
+            aux[k] = array[left++];
+        else
+            aux[k] = array[right++];
+        k++;
+    }
+
+    while(left <= mid)
+        aux[k++] = array[left++];
+
+    while(right <= end)
+        aux[k++] = array[right++];
+
+    for(k = start; k <= end; k++)
+        array[k] = aux[k - start];
+    
+    free(aux);
+}
+
+void heaptify(int *array, int position, int tam){
+    int greater = position;
+    int left = position * 2 + 1;
+    int right = position * 2 + 2;
+
+    if (left < tam && array[left] > array[position])
+        greater = left;
+    if (right < tam && array[right] > array[greater])
+        greater = right;
+    
+    if (greater != position){
+        swap(&array[position], &array[greater]);
+        heaptify(array, greater, tam);
+    }
+
+}
+
 // métodos quadráticos 0(n^2)
 void bubbleSort(int *array){
     int i,j;
@@ -86,28 +151,6 @@ void selectionSort(int *array){
 }
 
 // métodos log lineares 0(n log n)
-
-int partition(int *array, int start, int end)
-{
-    int pivo = array[end];
-    int k = start;
- 
-    for (int j = start; j <= end - 1; j++)
-        if (array[j] < pivo)    
-            swap(&array[k++], &array[j]);
-    
-    swap(&array[k], &array[end]);
-    return k;
-}
-
-int partition_rp(int *array, int start, int end){
-    int rp = start + rand() % (end - start);
-
-    swap(&array[rp], &array[end]);
-
-    return partition(array, start, end);
-}
-
 void quickSort(int *array, int start, int end){
     if(end > start){
         int pt = partition_rp(array, start, end);
@@ -115,32 +158,6 @@ void quickSort(int *array, int start, int end){
         quickSort(array, start, pt - 1);
         quickSort(array, pt + 1, end);
     }
-}
-
-void merge(int *array, int start, int mid, int end){
-    int *aux = malloc(sizeof(int) * N);
-    int left = start;
-    int right = mid + 1;
-    int k = 0;
-
-    while(left <= mid && right <= end){
-        if(array[left] <= array[right])
-            aux[k] = array[left++];
-        else
-            aux[k] = array[right++];
-        k++;
-    }
-
-    while(left <= mid)
-        aux[k++] = array[left++];
-
-    while(right <= end)
-        aux[k++] = array[right++];
-
-    for(k = start; k <= end; k++)
-        array[k] = aux[k - start];
-    
-    free(aux);
 }
 
 void mergeSort(int *array, int start, int end){
@@ -153,23 +170,6 @@ void mergeSort(int *array, int start, int end){
     }
 }
 
-void heaptify(int *array, int position, int tam){
-    int greater = position;
-    int left = position * 2 + 1;
-    int right = position * 2 + 2;
-
-    if (left < tam && array[left] > array[position])
-        greater = left;
-    if (right < tam && array[right] > array[greater])
-        greater = right;
-    
-    if (greater != position){
-        swap(&array[position], &array[greater]);
-        heaptify(array, greater, tam);
-    }
-
-}
-
 void heapSort(int *array){
     for(int k = N / 2 - 1; k >= 0; k--)
         heaptify(array, k, N);    
@@ -178,6 +178,16 @@ void heapSort(int *array){
         swap(&array[0], &array[k]);
         heaptify(array, 0, k);
     }
+}
+
+// métodos derivados de contagem 0(n * k)
+
+void countingSort(){
+
+}
+
+void radixSort(){
+
 }
 
 int main(int argc, char const *argv[])
