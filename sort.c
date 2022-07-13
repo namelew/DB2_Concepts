@@ -87,7 +87,7 @@ void selectionSort(int *array){
 
 // métodos log lineares 0(n log n)
 
-int partition (int *array, int start, int end)
+int partition(int *array, int start, int end)
 {
     int pivo = array[end];
     int k = start;
@@ -153,8 +153,31 @@ void mergeSort(int *array, int start, int end){
     }
 }
 
-void heapSort(){
+void heaptify(int *array, int position, int tam){
+    int greater = position;
+    int left = position * 2 + 1;
+    int right = position * 2 + 2;
 
+    if (left < tam && array[left] > array[position])
+        greater = left;
+    if (right < tam && array[right] > array[greater])
+        greater = right;
+    
+    if (greater != position){
+        swap(&array[position], &array[greater]);
+        heaptify(array, greater, tam);
+    }
+
+}
+
+void heapSort(int *array){
+    for(int k = N / 2 - 1; k >= 0; k--)
+        heaptify(array, k, N);    
+
+    for(int k = N - 1; k >= 1; k--){
+        swap(&array[0], &array[k]);
+        heaptify(array, 0, k);
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -165,7 +188,7 @@ int main(int argc, char const *argv[])
     }
     int *array = generateSample(sampleType);
 
-    mergeSort(array, 0, N - 1);
+    heapSort(array);
 
     printArray(array);
 
